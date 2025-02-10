@@ -8,12 +8,21 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { getPath } from "@/utils/paths";
 
+interface FormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default function AccountCreation() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -21,6 +30,19 @@ export default function AccountCreation() {
 
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      // Add your registration logic here
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -34,7 +56,7 @@ export default function AccountCreation() {
           <h2 className="text-3xl font-bold text-white mb-6 text-center">
             Create Account
           </h2>
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-300">
                 Email
@@ -42,10 +64,12 @@ export default function AccountCreation() {
               <Input
                 type="email"
                 id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                 placeholder="Enter your email"
+                disabled={isLoading}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -56,10 +80,12 @@ export default function AccountCreation() {
                 <Input
                   type={showPassword ? "text" : "password"}
                   id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={formData.password}
+                  onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   placeholder="Enter your password"
+                  disabled={isLoading}
+                  required
                 />
                 <Button
                   type="button"
@@ -80,10 +106,12 @@ export default function AccountCreation() {
                 <Input
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   placeholder="Confirm your password"
+                  disabled={isLoading}
+                  required
                 />
                 <Button
                   type="button"
@@ -96,19 +124,20 @@ export default function AccountCreation() {
                 </Button>
               </div>
             </div>
-            <Button
-              type="submit"
-              className="w-full bg-purple-600 hover:bg-purple-700"
+            <Button 
+              type="submit" 
+              className="w-full mt-6" 
+              disabled={isLoading}
             >
-              Create Account
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
+            <p className="mt-4 text-center text-gray-400">
+              Already have an account?{" "}
+              <Link href={getPath('/login')} className="text-purple-400 hover:underline">
+                Log in
+              </Link>
+            </p>
           </form>
-          <p className="mt-4 text-center text-gray-400">
-            Already have an account?{" "}
-            <Link href={getPath('/login')} className="text-purple-400 hover:underline">
-              Log in
-            </Link>
-          </p>
         </motion.div>
       </div>
     </div>
